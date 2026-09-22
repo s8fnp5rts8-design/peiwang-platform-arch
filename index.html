@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电竞陪玩俱乐部集成平台架构</title>
+<style>
+:root{color-scheme:dark}
+body{margin:0;padding:30px 20px 48px;background:#0b0f17;color:#e8eaf2;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;display:flex;flex-direction:column;align-items:center}
+.wrap{width:100%;max-width:1240px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{font-size:13px;color:#8b93a7;margin:0 0 18px}
+.panel{background:#10151f;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px;overflow-x:auto}
+svg{display:block;width:100%;height:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:20px}
+.card{border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.03)}
+.card h2{font-size:14px;margin:0 0 8px}
+.card ul{margin:0;padding-left:18px}
+.card li{font-size:13px;line-height:1.7;color:#b7bfd0}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px}
+.cyan{background:#22d3ee}.emerald{background:#34d399}.rose{background:#fb7185}
+text{font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>电竞陪玩俱乐部集成平台架构</h1>
+<p class="sub">容纳陪玩俱乐部与散户陪玩师的集成平台 · 静态共享版</p>
+<div class="panel">
+<svg viewBox="0 0 1270 640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8b93a7"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/>
+    </marker>
+  </defs>
+
+  <!-- boundaries -->
+  <rect x="205" y="58" width="860" height="545" rx="14" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.55"/>
+  <text x="222" y="76" font-size="11" fill="#f59e0b">集成平台云</text>
+  <rect x="438" y="272" width="600" height="330" rx="12" fill="none" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="454" y="290" font-size="11" fill="#fb7185">内网安全域</text>
+
+  <!-- edges -->
+  <g fill="none" stroke="#8b93a7" stroke-width="1.4">
+    <line x1="170" y1="332" x2="246" y2="332" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrowCyan)"/>
+    <polyline points="170,122 315,122 315,296" marker-end="url(#arrow)"/>
+    <polyline points="170,542 315,542 315,368" marker-end="url(#arrow)"/>
+    <line x1="380" y1="332" x2="456" y2="332" marker-end="url(#arrow)"/>
+    <line x1="525" y1="300" x2="525" y2="158" marker-end="url(#arrow)"/>
+    <line x1="590" y1="332" x2="666" y2="332" marker-end="url(#arrow)"/>
+    <polyline points="740,300 740,200 945,200 945,158" marker-end="url(#arrow)"/>
+    <line x1="810" y1="332" x2="876" y2="332" marker-end="url(#arrow)"/>
+    <line x1="1020" y1="332" x2="1086" y2="332" marker-end="url(#arrow)"/>
+    <polyline points="700,364 700,440 530,440 530,506" marker-end="url(#arrow)"/>
+    <polyline points="780,364 780,470 950,470 950,506" marker-end="url(#arrow)"/>
+    <line x1="600" y1="542" x2="876" y2="542" marker-end="url(#arrow)"/>
+    <line x1="950" y1="364" x2="950" y2="506" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- edge labels -->
+  <g font-size="11" fill="#8b93a7">
+    <text x="210" y="322" text-anchor="middle">HTTPS 下单</text>
+    <text x="242" y="112">入驻·团队管理</text>
+    <text x="242" y="532">入驻·认证接单</text>
+    <text x="420" y="322" text-anchor="middle">API 请求</text>
+    <text x="536" y="232">实名/风控核验</text>
+    <text x="628" y="322" text-anchor="middle">REST 路由</text>
+    <text x="842" y="190" text-anchor="middle">段位/战绩核验</text>
+    <text x="845" y="322" text-anchor="middle">订单结算</text>
+    <text x="1053" y="322" text-anchor="middle">分账/提现</text>
+    <text x="615" y="430" text-anchor="middle">连麦/通知</text>
+    <text x="866" y="460" text-anchor="middle">SQL/缓存</text>
+    <text x="740" y="532" text-anchor="middle">会话/事件存储</text>
+    <text x="962" y="440">账单流水</text>
+  </g>
+
+  <!-- nodes -->
+  <g>
+    <!-- external: gray -->
+    <g>
+      <rect x="40" y="90" width="130" height="64" rx="10" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+      <text x="105" y="117" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">陪玩俱乐部</text>
+      <text x="105" y="136" font-size="10" fill="#8b93a7" text-anchor="middle">批量入驻 · 团队管理</text>
+    </g>
+    <g>
+      <rect x="40" y="300" width="130" height="64" rx="10" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+      <text x="105" y="327" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">玩家用户</text>
+      <text x="105" y="346" font-size="10" fill="#8b93a7" text-anchor="middle">下单 · 连麦 · 评价</text>
+    </g>
+    <g>
+      <rect x="40" y="510" width="130" height="64" rx="10" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+      <text x="105" y="537" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">散户陪玩师</text>
+      <text x="105" y="556" font-size="10" fill="#8b93a7" text-anchor="middle">个人入驻 · 认证接单</text>
+    </g>
+    <g>
+      <rect x="880" y="90" width="140" height="64" rx="10" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+      <text x="950" y="117" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">游戏数据服务</text>
+      <text x="950" y="136" font-size="10" fill="#8b93a7" text-anchor="middle">段位 · 战绩核验</text>
+    </g>
+    <g>
+      <rect x="1090" y="300" width="140" height="64" rx="10" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+      <text x="1160" y="327" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">支付通道</text>
+      <text x="1160" y="346" font-size="10" fill="#8b93a7" text-anchor="middle">微信 · 支付宝 · 银联</text>
+    </g>
+    <!-- frontend: cyan -->
+    <g>
+      <rect x="250" y="300" width="130" height="64" rx="10" fill="#0f1b22" stroke="#22d3ee" stroke-width="1.6"/>
+      <text x="315" y="327" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">平台应用</text>
+      <text x="315" y="346" font-size="10" fill="#8b93a7" text-anchor="middle">App · 小程序 · Web</text>
+    </g>
+    <!-- backend: emerald -->
+    <g>
+      <rect x="460" y="300" width="130" height="64" rx="10" fill="#0f1d18" stroke="#34d399" stroke-width="1.6"/>
+      <text x="525" y="327" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">API 网关</text>
+      <text x="525" y="346" font-size="10" fill="#8b93a7" text-anchor="middle">鉴权 · 路由 · 限流</text>
+    </g>
+    <g>
+      <rect x="670" y="300" width="140" height="64" rx="10" fill="#0f1d18" stroke="#34d399" stroke-width="2.2"/>
+      <text x="740" y="324" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">业务中台</text>
+      <text x="740" y="341" font-size="10" fill="#8b93a7" text-anchor="middle">用户 · 订单 · 派单 · 评价</text>
+      <text x="740" y="356" font-size="9" fill="#34d399" text-anchor="middle">平台核心</text>
+    </g>
+    <g>
+      <rect x="880" y="300" width="140" height="64" rx="10" fill="#0f1d18" stroke="#34d399" stroke-width="1.6"/>
+      <text x="950" y="327" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">结算中心</text>
+      <text x="950" y="346" font-size="10" fill="#8b93a7" text-anchor="middle">计费 · 分账 · 提现</text>
+    </g>
+    <!-- security: rose -->
+    <g>
+      <rect x="460" y="90" width="140" height="64" rx="10" fill="#1f1218" stroke="#fb7185" stroke-width="1.6"/>
+      <text x="530" y="117" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">风控与实名认证</text>
+      <text x="530" y="136" font-size="10" fill="#8b93a7" text-anchor="middle">资质审核 · 反作弊</text>
+    </g>
+    <!-- messagebus: amber -->
+    <g>
+      <rect x="460" y="510" width="140" height="64" rx="10" fill="#1f1810" stroke="#f59e0b" stroke-width="1.6"/>
+      <text x="530" y="537" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">IM 与消息队列</text>
+      <text x="530" y="556" font-size="10" fill="#8b93a7" text-anchor="middle">连麦 · 通知 · 事件</text>
+    </g>
+    <!-- database: violet -->
+    <g>
+      <rect x="880" y="510" width="140" height="64" rx="10" fill="#171226" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="950" y="537" font-size="13" font-weight="700" fill="#e8eaf2" text-anchor="middle">数据存储</text>
+      <text x="950" y="556" font-size="10" fill="#8b93a7" text-anchor="middle">MySQL · Redis · OSS</text>
+    </g>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11" fill="#8b93a7">
+    <rect x="40" y="610" width="12" height="12" rx="3" fill="#0f1b22" stroke="#22d3ee" stroke-width="1.4"/>
+    <text x="58" y="620">前端</text>
+    <rect x="110" y="610" width="12" height="12" rx="3" fill="#0f1d18" stroke="#34d399" stroke-width="1.4"/>
+    <text x="128" y="620">后端</text>
+    <rect x="180" y="610" width="12" height="12" rx="3" fill="#171226" stroke="#8b5cf6" stroke-width="1.4"/>
+    <text x="198" y="620">数据库</text>
+    <rect x="260" y="610" width="12" height="12" rx="3" fill="#1f1218" stroke="#fb7185" stroke-width="1.4"/>
+    <text x="278" y="620">安全</text>
+    <rect x="330" y="610" width="12" height="12" rx="3" fill="#1f1810" stroke="#f59e0b" stroke-width="1.4"/>
+    <text x="348" y="620">消息总线</text>
+    <rect x="430" y="610" width="12" height="12" rx="3" fill="#161c27" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="448" y="620">外部系统</text>
+  </g>
+</svg>
+</div>
+<div class="cards">
+<div class="card"><h2><span class="dot cyan"></span>双轨供给侧</h2><ul><li>陪玩俱乐部批量入驻，统一管理旗下陪玩师与排班</li><li>散户陪玩师个人认证入驻，按技能标签自主接单</li></ul></div>
+<div class="card"><h2><span class="dot emerald"></span>交易闭环</h2><ul><li>玩家下单 → 中台智能派单 → IM 连麦开黑</li><li>计费结算中心统一分账，俱乐部与散户按规则提现</li></ul></div>
+<div class="card"><h2><span class="dot rose"></span>合规与资金安全</h2><ul><li>实名认证 + 资质审核 + 反作弊风控前置到网关</li><li>资金经第三方支付通道分账，平台不直接触资金池</li></ul></div>
+</div>
+</div>
+</body>
+</html>
